@@ -1,35 +1,36 @@
 export default () => {
   // BEGIN
-   const navs = document.querySelectorAll('.nav');
+  const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
   
-  for (let i = 0; i < navs.length; i++) {
-    const nav = navs[i];
-    const tabs = nav.querySelectorAll('[data-bs-toggle="tab"]');
+  for (let i = 0; i < tabs.length; i++) {
+    const tab = tabs[i];
     
-    for (let j = 0; j < tabs.length; j++) {
-      const tab = tabs[j];
+    tab.onclick = function(e) {
+      const targetId = this.getAttribute('data-bs-target');
+      const targetPane = document.querySelector(targetId);
       
-      tab.onclick = function(event) {
-        const targetId = this.getAttribute('data-bs-target');
-        const targetPane = document.querySelector(targetId);
-        
-        const parentNav = this.closest('.nav');
-        const allTabs = parentNav.querySelectorAll('[data-bs-toggle="tab"]');
-        
-        for (let k = 0; k < allTabs.length; k++) {
-          const t = allTabs[k];
-          t.classList.remove('active');
-        }
-        
-        const allPanes = document.querySelectorAll('.tab-pane');
-        for (let k = 0; k < allPanes.length; k++) {
-          const p = allPanes[k];
-          p.classList.remove('active');
-        }
-        
-        this.classList.add('active');
+      const allTabs = document.querySelectorAll('[data-bs-toggle="tab"]');
+      for (let j = 0; j < allTabs.length; j++) {
+        allTabs[j].classList.remove('active');
+      }
+      
+      const allPanes = document.querySelectorAll('.tab-pane');
+      for (let j = 0; j < allPanes.length; j++) {
+        allPanes[j].classList.remove('active');
+      }
+      
+      this.classList.add('active');
+      if (targetPane) {
         targetPane.classList.add('active');
-      };
+      }
+    };
+    
+    if (tab.classList.contains('active')) {
+      const targetId = tab.getAttribute('data-bs-target');
+      const targetPane = document.querySelector(targetId);
+      if (targetPane) {
+        targetPane.classList.add('active');
+      }
     }
   }
   // END
