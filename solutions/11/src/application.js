@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 
 export default () => {
   // BEGIN
-const inputs = document.querySelectorAll('[data-autocomplete]');
+ const inputs = document.querySelectorAll('[data-autocomplete]');
   
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
@@ -12,7 +12,7 @@ const inputs = document.querySelectorAll('[data-autocomplete]');
     
     if (!list) continue;
     
-    input.addEventListener('input', async function(e) {
+    input.addEventListener('input', function(e) {
       const value = e.target.value;
       
       if (value === '') {
@@ -20,26 +20,25 @@ const inputs = document.querySelectorAll('[data-autocomplete]');
         return;
       }
       
-      const fullUrl = window.location.origin + url + '?search=' + encodeURIComponent(value);
-      
-      try {
-        const response = await fetch(fullUrl);
-        const data = await response.json();
-        
-        list.innerHTML = '';
-        
-        if (data.length === 0) {
-          list.innerHTML = '<li>Nothing</li>';
-        } else {
-          for (let j = 0; j < data.length; j++) {
-            const li = document.createElement('li');
-            li.textContent = data[j];
-            list.appendChild(li);
+      fetch(url + '?search=' + encodeURIComponent(value))
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          list.innerHTML = '';
+          if (data.length === 0) {
+            list.innerHTML = '<li>Nothing</li>';
+          } else {
+            for (let j = 0; j < data.length; j++) {
+              const li = document.createElement('li');
+              li.textContent = data[j];
+              list.appendChild(li);
+            }
           }
-        }
-      } catch (error) {
-        list.innerHTML = '<li>Nothing</li>';
-      }
+        })
+        .catch(function() {
+          list.innerHTML = '<li>Nothing</li>';
+        });
     });
   }
   // END
