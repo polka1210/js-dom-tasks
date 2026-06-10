@@ -2,49 +2,58 @@ import 'whatwg-fetch';
 
 export default () => {
   // BEGIN
-  const inputs = document.querySelectorAll('[data-autocomplete]');
+ const capitalInput = document.getElementById('capital');
+  const countryInput = document.getElementById('country');
   
-  for (let i = 0; i < inputs.length; i++) {
-    const input = inputs[i];
-    const url = input.getAttribute('data-autocomplete');
-    const name = input.getAttribute('data-autocomplete-name');
-    const list = document.querySelector(`[data-autocomplete-name="${name}"]`);
-    
-    input.addEventListener('input', function() {
-      const query = this.value;
-      
-      if (query.length === 0) {
-        if (list) {
-          list.innerHTML = '<li>Nothing</li>';
-        }
+  const capitalList = document.querySelector('[data-autocomplete-name="capital"]');
+  const countryList = document.querySelector('[data-autocomplete-name="country"]');
+  
+  if (capitalInput && capitalList) {
+    capitalInput.oninput = function() {
+      const val = this.value;
+      if (val === '') {
+        capitalList.innerHTML = '<li>Nothing</li>';
         return;
       }
-      
-      fetch(url + '?search=' + encodeURIComponent(query))
-        .then(function(response) {
-          return response.json();
-        })
-        .then(function(data) {
-          if (list) {
-            list.innerHTML = '';
-            
-            if (data.length === 0) {
-              list.innerHTML = '<li>Nothing</li>';
-            } else {
-              for (let j = 0; j < data.length; j++) {
-                const li = document.createElement('li');
-                li.textContent = data[j];
-                list.appendChild(li);
-              }
+      fetch('/capitals.json?search=' + val)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          capitalList.innerHTML = '';
+          if (d.length === 0) {
+            capitalList.innerHTML = '<li>Nothing</li>';
+          } else {
+            for (var i = 0; i < d.length; i++) {
+              var li = document.createElement('li');
+              li.innerText = d[i];
+              capitalList.appendChild(li);
             }
           }
-        })
-        .catch(function() {
-          if (list) {
-            list.innerHTML = '<li>Nothing</li>';
+        });
+    };
+  }
+  
+  if (countryInput && countryList) {
+    countryInput.oninput = function() {
+      const val = this.value;
+      if (val === '') {
+        countryList.innerHTML = '<li>Nothing</li>';
+        return;
+      }
+      fetch('/countries.json?search=' + val)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          countryList.innerHTML = '';
+          if (d.length === 0) {
+            countryList.innerHTML = '<li>Nothing</li>';
+          } else {
+            for (var i = 0; i < d.length; i++) {
+              var li = document.createElement('li');
+              li.innerText = d[i];
+              countryList.appendChild(li);
+            }
           }
         });
-    });
+    };
   }
   // END
 };
